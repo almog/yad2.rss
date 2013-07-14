@@ -6,3 +6,11 @@ Install:
 gem install sinatra mechanize haml --no-rdoc --no-ri
 ruby serve.rb
 open http://localhost:4567/
+
+
+To do
+==================
+
+1) Gemfile
+2) Picutres
+3) customize search from rss url
