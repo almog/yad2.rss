@@ -17,33 +17,27 @@ class ApartmentSearch < Sinatra::Base
   end
 
   def load_apartments(request_params)
+      binding.pry
+    ad_type = request_params.delete('ad_type')
     agent = Mechanize.new { |a| a.log = Logger.new('apartment.log') }
     agent.user_agent_alias = "Mac Mozilla"
-    url = create_url(request_params)
+    url = create_url(ad_type, request_params)
     page = agent.get(url)
     trs = page.search('//div[@id="main_table"]//tr[@class="ActiveLink"]')
     trs.map do |tr|
       cells = tr / "td"
-
-      address = cells[8]
-      price = cells[10]
-      room_count = cells[12]
-      entry_date = cells[14]
-      floor = cells[16]
-      link = "http://www.yad2.co.il/Nadlan/" + ((cells[24]/"a")[1]/"@href").to_s
       # posted_on = (cells/"font").inner_html
-      Apartment.new(address,price,room_count,entry_date,floor,link)
+      Apartment.new(ad_type, cells)
     end
 
   rescue => e
-    agent.log.warn "an error (#{e}) occured on #{ApartmentSearch.url}"
+    agent.log.warn "an error (#{e}) occured on #{@url}"
     raise e
   end
 
-  def create_url(params)
+  def create_url(ad_type, params)
     uri = Addressable::URI.new
     uri.host = 'www.yad2.co.il'
-    ad_type = params.delete('ad_type')
     uri.path = "/Nadlan/#{ad_type}.php"
     uri.scheme = 'http'
     uri.query_values = params
@@ -68,9 +62,34 @@ class Apartment
     end
 =end
 
-  def initialize(address,price,room_count,entry_date,floor,link)
-    @address,@price,@room_count,@entry_date,@floor,@link,@posted_on = address,price,room_count,entry_date,floor,link
+  def initialize(ad_type, cells)
+      binding.pry
+    apartment_attributes = ad_type == 'rent' ? apartment_for_rent(cells) : apartment_for_sale(cells)
+    apartment_attributes.each do | key, value |
+      binding.pry
+      send("#{key}=", value)
+    end
+    #@address,@price,@room_count,@entry_date,@floor,@link,@posted_on = address,price,room_count,entry_date,floor,link
   end
+
+  def apartment_for_rent(cells)
+    {address => cells[8],
+     price => cells[10],
+     room_count => cells[12],
+     entry_date => cells[14],
+     floor => cells[16],
+     link => "http://www.yad2.co.il/Nadlan/" + ((cells[24]/"a")[1]/"@href").to_s}
+  end
+
+  def apartment_for_sale(cells)
+    {address => cells[8],
+     price => cells[10],
+     room_count => cells[12],
+     entry_date => cells[14],
+     floor => cells[16],
+     link => "http://www.yad2.co.il/Nadlan/" + ((cells[24]/"a")[1]/"@href").to_s}
+  end
+
 
 end
 
