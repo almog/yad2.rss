@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.3.4)
+    builder (3.2.0)
     coderay (1.0.9)
     domain_name (0.5.12)
       unf (>= 0.0.5, < 1.0.0)
@@ -48,6 +50,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  addressable
+  builder
   haml
   logger
   mechanize

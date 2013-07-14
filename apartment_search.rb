@@ -1,4 +1,5 @@
 Bundler.require(:default)
+require "addressable/uri"
 class ApartmentSearch < Sinatra::Base
   get "/" do
     "try /yad2 , or /yad2.rss "
