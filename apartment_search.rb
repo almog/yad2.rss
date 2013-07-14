@@ -41,7 +41,14 @@ class ApartmentSearch < Sinatra::Base
   end
 
   def create_url(params)
-
+    uri = Addressable::URI.new
+    uri.host = 'www.yad2.co.il'
+    ad_type = params.delete('ad_type')
+    uri.path = "/Nadlan/#{ad_type}.php"
+    uri.scheme = 'http'
+    uri.query_values = params
+    @url = uri.to_s
+    @url
   end
 
 end
