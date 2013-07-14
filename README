@@ -11,6 +11,7 @@ open http://localhost:4567/
 To do
 ==================
 
-1) Gemfile
 2) Picutres
 3) customize search from rss url
+4) Google map integration
+5) Unique ids
