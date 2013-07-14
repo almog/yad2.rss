@@ -1,0 +1,8 @@
+Tiny Kayako
+==================
+
+Install: 
+
+gem install sinatra mechanize haml --no-rdoc --no-ri
+ruby serve.rb
+open http://localhost:4567/
