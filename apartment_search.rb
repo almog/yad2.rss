@@ -6,7 +6,7 @@ class ApartmentSearch < Sinatra::Base
   end
 
   get "/yad2" do
-    @apartments = load_apartments
+    @apartments = load_apartments(request.params)
     haml :list
   end
 
