@@ -17,7 +17,6 @@ class ApartmentSearch < Sinatra::Base
   end
 
   def load_apartments(request_params)
-      binding.pry
     ad_type = request_params.delete('ad_type')
     agent = Mechanize.new { |a| a.log = Logger.new('apartment.log') }
     agent.user_agent_alias = "Mac Mozilla"
@@ -63,7 +62,6 @@ class Apartment
 =end
 
   def initialize(ad_type, cells)
-      binding.pry
     apartment_attributes = ad_type == 'rent' ? apartment_for_rent(cells) : apartment_for_sale(cells)
     apartment_attributes.each do | key, value |
       binding.pry
@@ -85,9 +83,9 @@ class Apartment
     {address => cells[8],
      price => cells[10],
      room_count => cells[12],
-     entry_date => cells[14],
-     floor => cells[16],
-     link => "http://www.yad2.co.il/Nadlan/" + ((cells[24]/"a")[1]/"@href").to_s}
+     entry_date => cells[18],
+     floor => cells[14],
+     link => "http://www.yad2.co.il/Nadlan/" + ((cells[20]/"a")[1]/"@href").to_s}
   end
 
 
