@@ -56,4 +56,5 @@ DEPENDENCIES
   logger
   mechanize
   pry
+  redis
   sinatra

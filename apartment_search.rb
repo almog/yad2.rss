@@ -88,14 +88,20 @@ class Apartment
   end
 
   def apartment_for_sale(cells)
+    begin
+      link = "http://www.yad2.co.il/Nadlan/" +
+        ((cells[20]/"a")[1]/"@href").to_s
+    rescue Exception => e
+      binding.pry
+    end
+
     {
       address: cells[8],
       price: cells[10],
       room_count: cells[12],
       entry_date: cells[18],
       floor: cells[14],
-      link: "http://www.yad2.co.il/Nadlan/" +
-        ((cells[20]/"a")[1]/"@href").to_s
+      link: link
     }
   end
 end
