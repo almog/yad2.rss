@@ -5,23 +5,40 @@ class ApartmentSearch < Sinatra::Base
     "try /yad2 , or /yad2.rss "
   end
 
-  get "/yad2" do
-    @apartments = load_apartments(request.params)
+  get "/yad2/rent" do
+    @apartments = load_apartments('rent', request.params)
     haml :list
   end
 
-  get "/yad2.rss" do
-    @apartments = load_apartments(request.params)
+  get "/yad2/sales" do
+    @apartments = load_apartments('sales', request.params)
+    haml :list
+  end
+
+  get "/yad2/rent.rss" do
+    @apartments = load_apartments('rent', request.params)
     headers 'Content-Type' => 'text/xml; charset=windows-1255'
     builder :rss
   end
 
-  def load_apartments(request_params)
-    ad_type = request_params.delete('ad_type')
+  get "/yad2/sales.rss" do
+    @apartments = load_apartments('sales', request.params)
+    headers 'Content-Type' => 'text/xml; charset=windows-1255'
+    builder :rss
+  end
+
+  private
+
+  def create_agent
     agent = Mechanize.new { |a| a.log = Logger.new('apartment.log') }
     agent.user_agent_alias = "Mac Mozilla"
+    agent
+  end
+
+  def load_apartments(ad_type, request_params)
     url = create_url(ad_type, request_params)
-    page = agent.get(url)
+    page = create_agent.get(url)
+    binding.pry
     trs = page.search('//div[@id="main_table"]//tr[@class="ActiveLink"]')
     trs.map do |tr|
       cells = tr / "td"
