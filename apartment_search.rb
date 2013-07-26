@@ -60,23 +60,11 @@ class ApartmentSearch < Sinatra::Base
     @url = uri.to_s
     @url
   end
-
 end
 
 class Apartment
 
   attr_accessor :address, :price,:room_count,:entry_date,:floor,:link #,:posted_on
-
-=begin
-    def parse_time_string(text)
-       if (cells/"font").inner_html.match(/^(\d\d)\/(\d\d)\/(\d\d\d\d)$/) # 05/08/2009
-         Time.parse("#{$2,$1,$3}}") # israel vs US month/day thing. (2,1,3)
-       else
-         @agent.log.warn "Put Time.now, could not parse out yad2 td/font date."
-         Time.now
-       end
-    end
-=end
 
   def initialize(ad_type, cells)
     apartment_attributes = ad_type == 'rent' ? apartment_for_rent(cells) : apartment_for_sale(cells)
@@ -88,25 +76,26 @@ class Apartment
   end
 
   def apartment_for_rent(cells)
-    {address => cells[8],
-     price => cells[10],
-     room_count => cells[12],
-     entry_date => cells[14],
-     floor => cells[16],
-     link => "http://www.yad2.co.il/Nadlan/" + ((cells[24]/"a")[1]/"@href").to_s}
+    {
+      address: cells[8],
+      price: cells[10],
+      room_count: cells[12],
+      entry_date: cells[14],
+      floor: cells[16],
+      link: "http://www.yad2.co.il/Nadlan/" +
+        ((cells[24]/"a")[1]/"@href").to_s
+    }
   end
 
   def apartment_for_sale(cells)
-    {address => cells[8],
-     price => cells[10],
-     room_count => cells[12],
-     entry_date => cells[18],
-     floor => cells[14],
-     link => "http://www.yad2.co.il/Nadlan/" + ((cells[20]/"a")[1]/"@href").to_s}
+    {
+      address: cells[8],
+      price: cells[10],
+      room_count: cells[12],
+      entry_date: cells[18],
+      floor: cells[14],
+      link: "http://www.yad2.co.il/Nadlan/" +
+        ((cells[20]/"a")[1]/"@href").to_s
+    }
   end
-
-
 end
-
-
-
