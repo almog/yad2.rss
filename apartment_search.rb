@@ -1,6 +1,11 @@
 Bundler.require(:default)
 require "addressable/uri"
+require 'capybara/poltergeist'
+Capybara.javascript_driver = :poltergeist
+Capybara.current_driver = :poltergeist
+Capybara.page.driver.headers = { "User-Agent" => "Mac Mozilla" }
 class ApartmentSearch < Sinatra::Base
+Capybara.app = ApartmentSearch
   get "/" do
     "try /yad2 , or /yad2.rss "
   end
@@ -17,26 +22,27 @@ class ApartmentSearch < Sinatra::Base
   end
 
   def load_apartments(request_params)
-    agent = Mechanize.new { |a| a.log = Logger.new('apartment.log') }
-    agent.user_agent_alias = "Mac Mozilla"
+    #agent = Mechanize.new { |a| a.log = Logger.new('apartment.log') }
+    #agent.user_agent_alias = "Mac Mozilla"
     url = create_url(request_params)
-    page = agent.get(url)
-    trs = page.search('//div[@id="main_table"]//tr[@class="ActiveLink"]')
+    Capybara.visit(url)
+    table = Capybara.page.find '#main_table'
+    trs = table.all "tr[class^='ActiveLink']"
     trs.map do |tr|
-      cells = tr / "td"
+      cells = tr.all "td"
 
       address = cells[8]
       price = cells[10]
       room_count = cells[12]
       entry_date = cells[14]
       floor = cells[16]
-      link = "http://www.yad2.co.il/Nadlan/" + ((cells[24]/"a")[1]/"@href").to_s
+      link = "http://www.yad2.co.il/Nadlan/" + ((cells[24].all "a")[1].all "href").to_s
       # posted_on = (cells/"font").inner_html
       Apartment.new(address,price,room_count,entry_date,floor,link)
     end
 
   rescue => e
-    agent.log.warn "an error (#{e}) occured on #{ApartmentSearch.url}"
+#    agent.log.warn "an error (#{e}) occured on #{ApartmentSearch.url}"
     raise e
   end
 
