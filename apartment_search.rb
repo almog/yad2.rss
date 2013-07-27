@@ -14,7 +14,7 @@ Capybara.app = ApartmentSearch
   end
 
   get "/yad2" do
-    @apartments = load_apartments
+    @apartments = load_apartments(request.params)
     haml :list
   end
 
@@ -22,6 +22,10 @@ Capybara.app = ApartmentSearch
     @apartments = load_apartments(request.params)
     headers 'Content-Type' => 'text/xml; charset=windows-1255'
     builder :rss
+  end
+
+  def self.url
+    "Just a place holder for the list.haml"
   end
 
   def load_apartments(request_params)
@@ -34,12 +38,12 @@ Capybara.app = ApartmentSearch
     trs.map do |tr|
       cells = tr.all "td"
 
-      address = cells[8]
-      price = cells[10]
-      room_count = cells[12]
-      entry_date = cells[14]
-      floor = cells[16]
-      link = "http://www.yad2.co.il/Nadlan/" + ((cells[24].all "a")[1].all "href").to_s
+      address = cells[8].text
+      price = cells[10].text
+      room_count = cells[12].text
+      entry_date = cells[14].text
+      floor = cells[16].text
+      link = "http://www.yad2.co.il/Nadlan/" + cells[24].all("a").last['href']
       # posted_on = (cells/"font").inner_html
       Apartment.new(address,price,room_count,entry_date,floor,link)
     end
