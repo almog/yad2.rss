@@ -38,7 +38,11 @@ Capybara.app = ApartmentSearch
     #agent.user_agent_alias = "Mac Mozilla"
     url = create_url(request_params)
     Capybara.visit(url)
-    table = Capybara.page.find '#main_table'
+    begin
+      table = Capybara.page.find '#main_table'
+    rescue Exception => e
+      binding.pry
+    end
     trs = table.all "tr[class^='ActiveLink']"
     trs.map do |tr|
       cells = tr.all "td"
