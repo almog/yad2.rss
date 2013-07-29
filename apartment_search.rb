@@ -3,10 +3,15 @@ require "addressable/uri"
 require 'capybara/poltergeist'
 Capybara.javascript_driver = :poltergeist
 Capybara.current_driver = :poltergeist
-Capybara.page.driver.headers =
-  {"User-Agent" =>
-   "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2) Gecko/20130328 Firefox/22.0"}
 
+Capybara.configure do |config|
+  config.ignore_hidden_elements = true
+  config.visible_text_only = true
+end
+#Capybara.page.driver.headers =
+#  {"User-Agent" =>
+#   "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2) Gecko/20130328 Firefox/22.0"}
+#
 class ApartmentSearch < Sinatra::Base
 Capybara.app = ApartmentSearch
   get "/" do
