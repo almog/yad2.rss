@@ -41,7 +41,8 @@ Capybara.app = ApartmentSearch
     begin
       table = Capybara.page.find '#main_table'
     rescue Exception => e
-      binding.pry
+      raise e
+      #binding.pry
     end
     trs = table.all "tr[class^='ActiveLink']"
     trs.map do |tr|
