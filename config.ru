@@ -4,5 +4,5 @@ require 'bundler'
 Bundler.require
 
 require './apartment_search'
+run ApartmentSearch
 
-Rack::Handler::Thin.run ApartmentSearch, :Port => 3001
