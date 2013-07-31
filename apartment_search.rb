@@ -1,12 +1,27 @@
 Bundler.require(:default)
 require "addressable/uri"
+require 'capybara/poltergeist'
+
+Capybara.register_driver :poltergeist do |app|
+  Capybara::Poltergeist::Driver.new(app, phantomjs_options: ["--disk-cache=true"])
+end
+
+Capybara.javascript_driver = :poltergeist
+Capybara.current_driver = :poltergeist
+
+Capybara.configure do |config|
+  config.ignore_hidden_elements = true
+  config.visible_text_only = true
+end
+
 class ApartmentSearch < Sinatra::Base
+Capybara.app = ApartmentSearch
   get "/" do
     "try /yad2 , or /yad2.rss "
   end
 
   get "/yad2" do
-    @apartments = load_apartments
+    @apartments = load_apartments(request.params)
     haml :list
   end
 
@@ -17,26 +32,23 @@ class ApartmentSearch < Sinatra::Base
   end
 
   def load_apartments(request_params)
-    agent = Mechanize.new { |a| a.log = Logger.new('apartment.log') }
-    agent.user_agent_alias = "Mac Mozilla"
-    url = create_url(request_params)
-    page = agent.get(url)
-    trs = page.search('//div[@id="main_table"]//tr[@class="ActiveLink"]')
+    @@url = create_url(request_params)
+    Capybara.visit(@@url)
+    table = Capybara.page.find '#main_table'
+    trs = table.all "tr[class^='ActiveLink']"
     trs.map do |tr|
-      cells = tr / "td"
+      cells = tr.all "td"
 
-      address = cells[8]
-      price = cells[10]
-      room_count = cells[12]
-      entry_date = cells[14]
-      floor = cells[16]
-      link = "http://www.yad2.co.il/Nadlan/" + ((cells[24]/"a")[1]/"@href").to_s
-      # posted_on = (cells/"font").inner_html
+      address = cells[8].text
+      price = cells[10].text
+      room_count = cells[12].text
+      entry_date = cells[14].text
+      floor = cells[16].text
+      link = "http://www.yad2.co.il/Nadlan/" + cells[24].all("a").last['href']
       Apartment.new(address,price,room_count,entry_date,floor,link)
     end
 
   rescue => e
-    agent.log.warn "an error (#{e}) occured on #{ApartmentSearch.url}"
     raise e
   end
 
@@ -55,24 +67,10 @@ end
 
 class Apartment
 
-  attr_accessor :address, :price,:room_count,:entry_date,:floor,:link #,:posted_on
-
-=begin
-    def parse_time_string(text)
-       if (cells/"font").inner_html.match(/^(\d\d)\/(\d\d)\/(\d\d\d\d)$/) # 05/08/2009
-         Time.parse("#{$2,$1,$3}}") # israel vs US month/day thing. (2,1,3)
-       else
-         @agent.log.warn "Put Time.now, could not parse out yad2 td/font date."
-         Time.now
-       end
-    end
-=end
+  attr_accessor :address, :price,:room_count,:entry_date,:floor,:link
 
   def initialize(address,price,room_count,entry_date,floor,link)
     @address,@price,@room_count,@entry_date,@floor,@link,@posted_on = address,price,room_count,entry_date,floor,link
   end
 
 end
-
-
-
