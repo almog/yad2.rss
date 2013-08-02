@@ -3,7 +3,12 @@ require "addressable/uri"
 require 'capybara/poltergeist'
 
 Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app, phantomjs_options: ["--disk-cache=true"])
+  options = {
+    phantomjs_options: ["--disk-cache=true"],
+    js_errors: false
+  }
+
+  Capybara::Poltergeist::Driver.new(app, options)
 end
 
 Capybara.javascript_driver = :poltergeist
