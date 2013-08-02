@@ -1,7 +1,3 @@
-Bundler.require(:default)
-require "addressable/uri"
-require 'capybara/poltergeist'
-
 Capybara.register_driver :poltergeist do |app|
   options = {
     phantomjs_options: ["--disk-cache=true"],
