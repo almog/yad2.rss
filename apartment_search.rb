@@ -50,7 +50,7 @@ Capybara.app = ApartmentSearch
     builder :rss
   end
 
-  def load_apartments(ad_type, request_params)
+   def load_apartments(ad_type, request_params)
     @@url = create_url(ad_type, request_params)
     Capybara.visit(@@url)
     table = Capybara.page.find '#main_table'
