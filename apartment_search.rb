@@ -1,53 +1,67 @@
-Bundler.require(:default)
-require "addressable/uri"
+Capybara.register_driver :poltergeist do |app|
+  options = {
+    phantomjs_options: ["--disk-cache=true"],
+    js_errors: false
+  }
+
+  Capybara::Poltergeist::Driver.new(app, options)
+end
+
+Capybara.javascript_driver = :poltergeist
+Capybara.current_driver = :poltergeist
+
+Capybara.configure do |config|
+  config.ignore_hidden_elements = true
+  config.visible_text_only = true
+end
+
 class ApartmentSearch < Sinatra::Base
+Capybara.app = ApartmentSearch
   get "/" do
     "try /yad2 , or /yad2.rss "
   end
 
   get "/yad2/rent" do
-    @apartments = load_apartments('rent', request.params)
-    haml :list
+    get_list('rent')
   end
 
   get "/yad2/sales" do
-    @apartments = load_apartments('sales', request.params)
-    haml :list
+    get_list('sales')
   end
 
   get "/yad2/rent.rss" do
-    @apartments = load_apartments('rent', request.params)
-    headers 'Content-Type' => 'text/xml; charset=windows-1255'
-    builder :rss
+    get_rss('rent')
   end
 
   get "/yad2/sales.rss" do
-    @apartments = load_apartments('sales', request.params)
-    headers 'Content-Type' => 'text/xml; charset=windows-1255'
-    builder :rss
+    get_rss('sales')
   end
 
   private
 
-  def create_agent
-    agent = Mechanize.new { |a| a.log = Logger.new('apartment.log') }
-    agent.user_agent_alias = "Mac Mozilla"
-    agent
+  def get_list(ad_type)
+    @apartments = load_apartments(ad_type, request.params)
+    haml :list
+  end
+
+  def get_rss(ad_type)
+    @apartments = load_apartments(ad_type, request.params)
+    headers 'Content-Type' => 'text/xml; charset=windows-1255'
+    builder :rss
   end
 
   def load_apartments(ad_type, request_params)
-    url = create_url(ad_type, request_params)
-    page = create_agent.get(url)
-    binding.pry
-    trs = page.search('//div[@id="main_table"]//tr[@class="ActiveLink"]')
+    @@url = create_url(ad_type, request_params)
+    Capybara.visit(@@url)
+    table = Capybara.page.find '#main_table'
+    trs = table.all "tr[class^='ActiveLink']"
     trs.map do |tr|
-      cells = tr / "td"
-      # posted_on = (cells/"font").inner_html
+      cells = tr.all "td"
+
       Apartment.new(ad_type, cells)
     end
 
   rescue => e
-    agent.log.warn "an error (#{e}) occured on #{@url}"
     raise e
   end
 
@@ -64,43 +78,37 @@ end
 
 class Apartment
 
-  attr_accessor :address, :price,:room_count,:entry_date,:floor,:link #,:posted_on
+  attr_accessor :address, :price,:room_count,:entry_date,:floor,:link
 
   def initialize(ad_type, cells)
     apartment_attributes = ad_type == 'rent' ? apartment_for_rent(cells) : apartment_for_sale(cells)
     apartment_attributes.each do | key, value |
-      binding.pry
       send("#{key}=", value)
     end
-    #@address,@price,@room_count,@entry_date,@floor,@link,@posted_on = address,price,room_count,entry_date,floor,link
   end
 
   def apartment_for_rent(cells)
+    link = "http://www.yad2.co.il/Nadlan/" +
+      cells[24].all("a").last['href'].to_s
     {
-      address: cells[8],
-      price: cells[10],
-      room_count: cells[12],
-      entry_date: cells[14],
-      floor: cells[16],
-      link: "http://www.yad2.co.il/Nadlan/" +
-        ((cells[24]/"a")[1]/"@href").to_s
+      address: cells[8].text,
+      price: cells[10].text,
+      room_count: cells[12].text,
+      entry_date: cells[14].text,
+      floor: cells[16].text,
+      link: link
     }
   end
 
   def apartment_for_sale(cells)
-    begin
-      link = "http://www.yad2.co.il/Nadlan/" +
-        ((cells[20]/"a")[1]/"@href").to_s
-    rescue Exception => e
-      binding.pry
-    end
-
+    link = "http://www.yad2.co.il/Nadlan/" +
+      cells[20].all("a").last['href'].to_s
     {
-      address: cells[8],
-      price: cells[10],
-      room_count: cells[12],
-      entry_date: cells[18],
-      floor: cells[14],
+      address: cells[8].text,
+      price: cells[10].text,
+      room_count: cells[12].text,
+      entry_date: cells[18].text,
+      floor: cells[14].text,
       link: link
     }
   end
