@@ -50,14 +50,13 @@ Capybara.app = ApartmentSearch
     builder :rss
   end
 
-   def load_apartments(ad_type, request_params)
+  def load_apartments(ad_type, request_params)
     @@url = create_url(ad_type, request_params)
     Capybara.visit(@@url)
     table = Capybara.page.find '#main_table'
     trs = table.all "tr[class^='ActiveLink']"
     trs.map do |tr|
       cells = tr.all "td"
-
       Apartment.new(ad_type, cells)
     end
 
