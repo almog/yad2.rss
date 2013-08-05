@@ -11,7 +11,8 @@ open http://localhost:4567/
 To do
 ==================
 
-2) Picutres
-3) customize search from rss url
-4) Google map integration
-5) Unique ids
+* Picutres
+* Google map integration
+* Unique ids
+* Map name to area ID
+
