@@ -59,9 +59,6 @@ Capybara.app = ApartmentSearch
       cells = tr.all "td"
       Apartment.new(ad_type, cells)
     end
-
-  rescue => e
-    raise e
   end
 
   def create_url(ad_type, params)
