@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+ruby '1.9.3-p448'
 gem 'logger'
 gem 'sinatra'
 gem 'pry'
