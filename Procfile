@@ -1,1 +1,1 @@
-web: thin -R config.ru start
+web: bundle exec thin -R config.ru start
