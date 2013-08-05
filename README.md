@@ -27,8 +27,7 @@ Where:
 
 For example, the RSS url for [this](http://www.yad2.co.il/Nadlan/rent.php?AreaID=&City=&HomeTypeID=&fromRooms=&untilRooms=&fromPrice=100&untilPrice=200&PriceType=1&FromFloor=&ToFloor=&EnterDate=&Info=)
 search is:
-
-```http://localhost:9292/rent?AreaID=&City=&HomeTypeID=&fromRooms=&untilRooms=&fromPrice=100&untilPrice=200&PriceType=1&FromFloor=&ToFloor=&EnterDate=&Info=```
+`http://localhost:9292/rent?AreaID=&City=&HomeTypeID=&fromRooms=&untilRooms=&fromPrice=100&untilPrice=200&PriceType=1&FromFloor=&ToFloor=&EnterDate=&Info=`
 
 
 Use your favorite news reader to serve it.
