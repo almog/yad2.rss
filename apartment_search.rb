@@ -1,3 +1,5 @@
+require 'sinatra/reloader' if development?
+
 Capybara.register_driver :poltergeist do |app|
   options = {
     phantomjs_options: ["--disk-cache=true"],
@@ -16,7 +18,11 @@ Capybara.configure do |config|
 end
 
 class ApartmentSearch < Sinatra::Base
-Capybara.app = ApartmentSearch
+  configure :development do
+    register Sinatra::Reloader
+  end
+
+  Capybara.app = ApartmentSearch
   get "/" do
     "try /yad2 , or /yad2.rss "
   end
