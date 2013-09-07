@@ -2,7 +2,7 @@ require 'sinatra/reloader' if development?
 
 Capybara.register_driver :poltergeist do |app|
   options = {
-    phantomjs_options: ["--disk-cache=true"],
+    phantomjs_options: ["--disk-cache=true", "--load-images=false"],
     js_errors: false
   }
 
