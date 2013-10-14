@@ -35,8 +35,3 @@ It is worth noting here that your news reader update rate should approximately m
 
 ##Acknowledgement
 This project is based on [@shaiguitar](http://github.com/shaiguitar)'s old project that aimed to achieve the same goal.
-
-##TODO
-* Tests
-* Photos
-* Google maps
