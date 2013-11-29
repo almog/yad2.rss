@@ -1,3 +1,7 @@
+require 'rubygems'
+require 'bundler'
+
+Bundler.require
 require 'sinatra/reloader' if development?
 
 Capybara.register_driver :poltergeist do |app|
@@ -17,65 +21,62 @@ Capybara.configure do |config|
   config.visible_text_only = true
 end
 
-class ApartmentSearch < Sinatra::Base
-  configure :development do
-    register Sinatra::Reloader
-  end
+configure :development do
+  register Sinatra::Reloader
+end
 
-  Capybara.app = ApartmentSearch
-  get "/" do
-    "try /yad2 , or /yad2.rss "
-  end
+get "/" do
+  "try /yad2 , or /yad2.rss "
+end
 
-  get "/yad2/rent" do
-    get_list('rent')
-  end
+get "/yad2/rent" do
+  get_list('rent')
+end
 
-  get "/yad2/sales" do
-    get_list('sales')
-  end
+get "/yad2/sales" do
+  get_list('sales')
+end
 
-  get "/yad2/rent.rss" do
-    get_rss('rent')
-  end
+get "/yad2/rent.rss" do
+  get_rss('rent')
+end
 
-  get "/yad2/sales.rss" do
-    get_rss('sales')
-  end
+get "/yad2/sales.rss" do
+  get_rss('sales')
+end
 
-  private
+private
 
-  def get_list(ad_type)
-    @apartments = load_apartments(ad_type, request.params)
-    haml :list
-  end
+def get_list(ad_type)
+  @apartments = load_apartments(ad_type, request.params)
+  haml :list
+end
 
-  def get_rss(ad_type)
-    @apartments = load_apartments(ad_type, request.params)
-    headers 'Content-Type' => 'text/xml; charset=windows-1255'
-    builder :rss
-  end
+def get_rss(ad_type)
+  @apartments = load_apartments(ad_type, request.params)
+  headers 'Content-Type' => 'text/xml; charset=windows-1255'
+  builder :rss
+end
 
-  def load_apartments(ad_type, request_params)
-    @@url = create_url(ad_type, request_params)
-    Capybara.visit(@@url)
-    table = Capybara.page.find '#main_table'
-    trs = table.all "tr[class^='ActiveLink']"
-    trs.map do |tr|
-      cells = tr.all "td"
-      Apartment.new(ad_type, cells)
-    end
+def load_apartments(ad_type, request_params)
+  @@url = create_url(ad_type, request_params)
+  Capybara.visit(@@url)
+  table = Capybara.page.find '#main_table'
+  trs = table.all "tr[class^='ActiveLink']"
+  trs.map do |tr|
+    cells = tr.all "td"
+    Apartment.new(ad_type, cells)
   end
+end
 
-  def create_url(ad_type, params)
-    uri = Addressable::URI.new
-    uri.host = 'www.yad2.co.il'
-    uri.path = "/Nadlan/#{ad_type}.php"
-    uri.scheme = 'http'
-    uri.query_values = params
-    @url = uri.to_s
-    @url
-  end
+def create_url(ad_type, params)
+  uri = Addressable::URI.new
+  uri.host = 'www.yad2.co.il'
+  uri.path = "/Nadlan/#{ad_type}.php"
+  uri.scheme = 'http'
+  uri.query_values = params
+  @url = uri.to_s
+  @url
 end
 
 class Apartment

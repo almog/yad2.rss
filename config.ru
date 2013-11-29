@@ -4,5 +4,4 @@ require 'bundler'
 Bundler.require
 
 require './apartment_search'
-run ApartmentSearch
-
+run Sinatra::Application
