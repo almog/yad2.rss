@@ -80,7 +80,6 @@ def create_url(ad_type, params)
 end
 
 class Apartment
-
   attr_accessor :address, :price,:room_count,:entry_date,:floor,:link
 
   def initialize(ad_type, cells)
@@ -94,12 +93,12 @@ class Apartment
     link = "http://www.yad2.co.il/Nadlan/" +
       cells[24].all("a").last['href'].to_s
     {
-      address: cells[8].text,
-      price: cells[10].text,
+      address:    cells[8].text,
+      price:      cells[10].text,
       room_count: cells[12].text,
       entry_date: cells[14].text,
-      floor: cells[16].text,
-      link: link
+      floor:      cells[16].text,
+      link:       link
     }
   end
 
@@ -107,12 +106,12 @@ class Apartment
     link = "http://www.yad2.co.il/Nadlan/" +
       cells[20].all("a").last['href'].to_s
     {
-      address: cells[8].text,
-      price: cells[10].text,
+      address:    cells[8].text,
+      price:      cells[10].text,
       room_count: cells[12].text,
       entry_date: cells[18].text,
-      floor: cells[14].text,
-      link: link
+      floor:      cells[14].text,
+      link:       link
     }
   end
 end
