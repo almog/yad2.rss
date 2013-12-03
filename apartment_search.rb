@@ -6,7 +6,7 @@ require 'sinatra/reloader' if development?
 
 Capybara.register_driver :poltergeist do |app|
   options = {
-    phantomjs_options: ["--disk-cache=true", "--load-images=false"],
+    phantomjs_options: ["--disk-cache=true", "--load-images=false"],#, "--ignore-host='(google.com|google-analytics.com)'"],
     js_errors: false
   }
 
@@ -19,6 +19,8 @@ Capybara.current_driver = :poltergeist
 Capybara.configure do |config|
   config.ignore_hidden_elements = true
   config.visible_text_only = true
+  config.page.driver.add_headers( "User-Agent" =>
+                                    "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1" )
 end
 
 configure :development do
