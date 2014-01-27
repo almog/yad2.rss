@@ -63,8 +63,12 @@ end
 def load_apartments(ad_type, request_params)
   @@url = create_url(ad_type, request_params)
   Capybara.visit(@@url)
-  table = Capybara.page.find '#main_table'
-  trs = table.all "tr[class^='ActiveLink']"
+  begin
+    table = Capybara.page.find '#main_table'
+  rescue Capybara::ElementNotFound
+    raise "Couldn't find the ads table"
+  end
+  trs = table.all "tr[id^='tr_Ad_']"
   trs.map do |tr|
     cells = tr.all "td"
     Apartment.new(ad_type, cells)
@@ -92,8 +96,10 @@ class Apartment
   end
 
   def apartment_for_rent(cells)
-    link = "http://www.yad2.co.il/Nadlan/" +
-      cells[24].all("a").last['href'].to_s
+    link = "http://www.yad2.co.il/" +
+      cells[21].all("a").last['href'].to_s
+    puts link
+
     {
       address:    cells[8].text,
       price:      cells[10].text,
@@ -105,8 +111,7 @@ class Apartment
   end
 
   def apartment_for_sale(cells)
-    link = "http://www.yad2.co.il/Nadlan/" +
-      cells[20].all("a").last['href'].to_s
+    link = "http://www.yad2.co.il" + cells[20].all("a").last['href'].to_s
     {
       address:    cells[8].text,
       price:      cells[10].text,
