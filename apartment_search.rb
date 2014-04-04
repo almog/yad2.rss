@@ -61,21 +61,24 @@ def get_rss(ad_type)
 end
 
 def load_apartments(ad_type, request_params)
-  @@url = create_url(ad_type, request_params)
-  Capybara.visit(@@url)
-  begin
-    table = Capybara.page.find '#main_table'
-  rescue Capybara::ElementNotFound
-    raise "Couldn't find the ads table"
-  end
-  trs = table.all "tr[id^='tr_Ad_']"
-  trs.map do |tr|
-    cells = tr.all "td"
-    Apartment.new(ad_type, cells)
-  end
+  2.times.map do |page_number|
+    @@url = create_url(ad_type, request_params, page_number)
+    Capybara.visit(@@url)
+    begin
+      table = Capybara.page.find '#main_table'
+    rescue Capybara::ElementNotFound
+      raise "Couldn't find the ads table"
+    end
+    trs = table.all "tr[id^='tr_Ad_']"
+    apartments = trs.map do |tr|
+      cells = tr.all "td"
+      Apartment.new(ad_type, cells)
+    end
+  end.flatten
 end
 
-def create_url(ad_type, params)
+def create_url(ad_type, params, page_number)
+  params["Page"] = page_number
   uri = Addressable::URI.new
   uri.host = 'www.yad2.co.il'
   uri.path = "/Nadlan/#{ad_type}.php"
