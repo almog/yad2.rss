@@ -61,13 +61,11 @@ def get_rss(ad_type)
 end
 
 def load_apartments(ad_type, request_params)
-  3.times.map do |page_number|
+  4.times.map do |page_number|
     @@url = create_url(ad_type, request_params, page_number + 1)
-    session = Capybara::Session.new(:poltergeist)
-
-    session.visit(@@url)
+    Capybara.visit(@@url)
     begin
-      table = session.find '#main_table'
+      table = Capybara.page.find '#main_table'
     rescue Capybara::ElementNotFound
       raise "Couldn't find the ads table"
     end
