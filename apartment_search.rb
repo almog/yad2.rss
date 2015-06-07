@@ -61,7 +61,7 @@ def get_rss(ad_type)
 end
 
 def load_apartments(ad_type, request_params)
-  4.times.map do |page_number|
+  3.times.map do |page_number|
     @@url = create_url(ad_type, request_params, page_number + 1)
     Capybara.visit(@@url)
     begin
