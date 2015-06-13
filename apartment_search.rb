@@ -31,14 +31,6 @@ get "/" do
   "try /yad2 , or /yad2.rss "
 end
 
-get "/yad2/rent" do
-  get_list('rent')
-end
-
-get "/yad2/sales" do
-  get_list('sales')
-end
-
 get "/yad2/rent.rss" do
   get_rss('rent')
 end
@@ -48,11 +40,6 @@ get "/yad2/sales.rss" do
 end
 
 private
-
-def get_list(ad_type)
-  @apartments = load_apartments(ad_type, request.params)
-  haml :list
-end
 
 def get_rss(ad_type)
   @apartments = load_apartments(ad_type, request.params)
